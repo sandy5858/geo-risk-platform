@@ -1,0 +1,11 @@
+export const INDIA_MAP_STYLE = "mapbox://styles/mapbox/light-v11";
+export const INDIA_MAP_CENTER: [number, number] = [78.9629, 22.5937];
+export const INDIA_MAP_ZOOM = 3;
+export const INDIA_MAP_MIN_ZOOM = 3;
+export const INDIA_MAP_MAX_ZOOM = 7;
+export const INDIA_GEOJSON_PATH = "/india.geojson";
+export const INDIA_SOURCE_ID = "india";
+export const INDIA_FILL_LAYER_ID = "india-fill";
+export const INDIA_BORDER_LAYER_ID = "india-border";
+export const INDIA_FILL_OPACITY = 0.1;
+export const INDIA_BORDER_WIDTH = 1;
