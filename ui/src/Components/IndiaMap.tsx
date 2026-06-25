@@ -1,9 +1,10 @@
 // src/features/map/components/IndiaMap.tsx
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
 
 import "mapbox-gl/dist/mapbox-gl.css";
+
 import {
     INDIA_MAP_STYLE,
     INDIA_MAP_CENTER,
@@ -17,16 +18,18 @@ import {
     INDIA_FILL_OPACITY,
     INDIA_BORDER_WIDTH,
 } from "../Common/Constants";
+import H3Layer from "./H3Layer";
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 
 export default function IndiaMap() {
     const mapContainerRef = useRef<HTMLDivElement | null>(null);
+    const [map, setMap] = useState<mapboxgl.Map | null>(null);
 
     useEffect(() => {
         if (!mapContainerRef.current) return;
 
-        const map = new mapboxgl.Map({
+        const mapInstance = new mapboxgl.Map({
             container: mapContainerRef.current,
             style: INDIA_MAP_STYLE,
             center: INDIA_MAP_CENTER,
@@ -35,18 +38,18 @@ export default function IndiaMap() {
             maxZoom: INDIA_MAP_MAX_ZOOM,
         });
 
-        map.addControl(new mapboxgl.NavigationControl(), "top-right");
+        mapInstance.addControl(new mapboxgl.NavigationControl(), "top-right");
 
-        map.on("load", async () => {
+        mapInstance.on("load", async () => {
             const response = await fetch(INDIA_GEOJSON_PATH);
             const indiaGeoJson = await response.json();
 
-            map.addSource(INDIA_SOURCE_ID, {
+            mapInstance.addSource(INDIA_SOURCE_ID, {
                 type: "geojson",
                 data: indiaGeoJson,
             });
 
-            map.addLayer({
+            mapInstance.addLayer({
                 id: INDIA_FILL_LAYER_ID,
                 type: "fill",
                 source: INDIA_SOURCE_ID,
@@ -55,7 +58,7 @@ export default function IndiaMap() {
                 },
             });
 
-            map.addLayer({
+            mapInstance.addLayer({
                 id: INDIA_BORDER_LAYER_ID,
                 type: "line",
                 source: INDIA_SOURCE_ID,
@@ -63,20 +66,35 @@ export default function IndiaMap() {
                     "line-width": INDIA_BORDER_WIDTH,
                 },
             });
+
+            setMap(mapInstance);
         });
 
         return () => {
-            map.remove();
+            mapInstance.remove();
         };
     }, []);
 
     return (
-        <div
-            ref={mapContainerRef}
-            style={{
-                width: "100%",
-                height: "100vh",
-            }}
-        />
+        <>
+            <div
+                ref={mapContainerRef}
+                style={{
+                    width: "100%",
+                    height: "100vh",
+                }}
+            />
+            {map && (
+                <H3Layer
+                    map={map}
+                    locations={[
+                        { latitude: 12.9716, longitude: 77.5946 },  // Bangalore
+                        { latitude: 28.6139, longitude: 77.209 },   // Delhi
+                        { latitude: 19.076, longitude: 72.8777 }    // Mumbai
+                    ]}
+                    resolution={4}
+                />
+            )}
+        </>
     );
 }
