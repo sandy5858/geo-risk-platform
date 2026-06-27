@@ -82,13 +82,21 @@ export default function H3Layer({
                         type: "fill",
                         source: H3_SOURCE_ID,
                         paint: {
-                            "fill-color": fillColor,
+                            "fill-color": [
+                                "coalesce",
+                                ["get", "fillColor"],
+                                fillColor,
+                            ],
                             "fill-opacity": fillOpacity,
                         },
                     });
                 } else {
                     // update paint if exists
-                    map.setPaintProperty(H3_FILL_LAYER_ID, "fill-color", fillColor);
+                    map.setPaintProperty(H3_FILL_LAYER_ID, "fill-color", [
+                        "coalesce",
+                        ["get", "fillColor"],
+                        fillColor,
+                    ]);
                     map.setPaintProperty(H3_FILL_LAYER_ID, "fill-opacity", fillOpacity);
                 }
 
