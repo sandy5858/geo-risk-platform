@@ -9,3 +9,11 @@ export const INDIA_FILL_LAYER_ID = "india-fill";
 export const INDIA_BORDER_LAYER_ID = "india-border";
 export const INDIA_FILL_OPACITY = 0.05;
 export const INDIA_BORDER_WIDTH = 1;
+
+export const H3_SOURCE_ID = "h3-cells";
+export const H3_FILL_LAYER_ID = "h3-fill";
+export const H3_OUTLINE_LAYER_ID = "h3-outline";
+export const H3_FILL_COLOR = "#ff0000";
+export const H3_FILL_OPACITY = 0.4;
+export const H3_OUTLINE_COLOR = "#000000";
+export const H3_OUTLINE_WIDTH = 2;
