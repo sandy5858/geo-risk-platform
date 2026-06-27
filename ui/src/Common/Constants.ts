@@ -7,5 +7,5 @@ export const INDIA_GEOJSON_PATH = "/india.geojson";
 export const INDIA_SOURCE_ID = "india";
 export const INDIA_FILL_LAYER_ID = "india-fill";
 export const INDIA_BORDER_LAYER_ID = "india-border";
-export const INDIA_FILL_OPACITY = 0.1;
+export const INDIA_FILL_OPACITY = 0.05;
 export const INDIA_BORDER_WIDTH = 1;

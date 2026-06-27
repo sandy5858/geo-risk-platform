@@ -19,12 +19,19 @@ import {
     INDIA_BORDER_WIDTH,
 } from "../Common/Constants";
 import H3Layer from "./H3Layer";
+import { getIndiaH3CellLocations } from "../utils/h3Utilities";
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
+
+interface Location {
+    latitude: number;
+    longitude: number;
+}
 
 export default function IndiaMap() {
     const mapContainerRef = useRef<HTMLDivElement | null>(null);
     const [map, setMap] = useState<mapboxgl.Map | null>(null);
+    const [h3Locations, setH3Locations] = useState<Location[]>([]);
 
     useEffect(() => {
         if (!mapContainerRef.current) return;
@@ -67,6 +74,14 @@ export default function IndiaMap() {
                 },
             });
 
+            // Get all H3 cell locations covering India at resolution 3
+            try {
+                const locations = await getIndiaH3CellLocations(3);
+                setH3Locations(locations);
+            } catch (error) {
+                console.error("Failed to get India H3 cell locations:", error);
+            }
+
             setMap(mapInstance);
         });
 
@@ -84,15 +99,11 @@ export default function IndiaMap() {
                     height: "100vh",
                 }}
             />
-            {map && (
+            {map && h3Locations.length > 0 && (
                 <H3Layer
                     map={map}
-                    locations={[
-                        { latitude: 12.9716, longitude: 77.5946 },  // Bangalore
-                        { latitude: 28.6139, longitude: 77.209 },   // Delhi
-                        { latitude: 19.076, longitude: 72.8777 }    // Mumbai
-                    ]}
-                    resolution={4}
+                    locations={h3Locations}
+                    resolution={3}
                 />
             )}
         </>
