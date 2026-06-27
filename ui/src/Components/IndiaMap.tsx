@@ -31,7 +31,13 @@ interface Location {
 export default function IndiaMap() {
     const mapContainerRef = useRef<HTMLDivElement | null>(null);
     const [map, setMap] = useState<mapboxgl.Map | null>(null);
-    const [h3Locations, setH3Locations] = useState<Location[]>([]);
+    const [currentResolution, setCurrentResolution] = useState<number>(3);
+    const [h3LocationsByResolution, setH3LocationsByResolution] = useState<Record<number, Location[]>>({
+        3: [],
+        4: [],
+    });
+
+    const getH3ResolutionForZoom = (zoom: number): number => (zoom <= 5 ? 3 : 4);
 
     useEffect(() => {
         if (!mapContainerRef.current) return;
@@ -46,6 +52,9 @@ export default function IndiaMap() {
         });
 
         mapInstance.addControl(new mapboxgl.NavigationControl(), "top-right");
+        mapInstance.on("zoomend", () => {
+            setCurrentResolution(getH3ResolutionForZoom(mapInstance.getZoom()));
+        });
 
         mapInstance.on("load", async () => {
             const response = await fetch(INDIA_GEOJSON_PATH);
@@ -74,21 +83,30 @@ export default function IndiaMap() {
                 },
             });
 
-            // Get all H3 cell locations covering India at resolution 3
+            setMap(mapInstance);
+            setCurrentResolution(getH3ResolutionForZoom(mapInstance.getZoom()));
+
             try {
-                const locations = await getIndiaH3CellLocations(3);
-                setH3Locations(locations);
+                const [res3Locations, res4Locations] = await Promise.all([
+                    getIndiaH3CellLocations(3),
+                    getIndiaH3CellLocations(4),
+                ]);
+
+                setH3LocationsByResolution({
+                    3: res3Locations,
+                    4: res4Locations,
+                });
             } catch (error) {
                 console.error("Failed to get India H3 cell locations:", error);
             }
-
-            setMap(mapInstance);
         });
 
         return () => {
             mapInstance.remove();
         };
     }, []);
+
+    const displayedLocations = h3LocationsByResolution[currentResolution] ?? [];
 
     return (
         <>
@@ -99,11 +117,11 @@ export default function IndiaMap() {
                     height: "100vh",
                 }}
             />
-            {map && h3Locations.length > 0 && (
+            {map && displayedLocations.length > 0 && (
                 <H3Layer
                     map={map}
-                    locations={h3Locations}
-                    resolution={3}
+                    locations={displayedLocations}
+                    resolution={currentResolution}
                 />
             )}
         </>
