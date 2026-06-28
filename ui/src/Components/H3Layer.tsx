@@ -53,11 +53,12 @@ export default function H3Layer({
                     return;
                 }
 
-                const features = locs.map((loc, idx) => createH3Feature(loc, resolution, `h3-${idx}`));
+                const features = locs.map((loc) => createH3Feature(loc, resolution));
+                const uniqueFeatures = [...new Map(features.map(item => [item.properties?.id, item])).values()];
 
                 const geojson: FeatureCollection<Geometry, GeoJsonProperties> = {
                     type: "FeatureCollection",
-                    features,
+                    features: uniqueFeatures,
                 };
 
                 // Replace existing source if present

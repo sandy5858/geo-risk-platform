@@ -88,8 +88,8 @@ export default function IndiaMap() {
 
             try {
                 const [res3Locations, res4Locations] = await Promise.all([
-                    getIndiaH3CellLocations(3),
                     getIndiaH3CellLocations(4),
+                    getIndiaH3CellLocations(5),
                 ]);
 
                 setH3LocationsByResolution({

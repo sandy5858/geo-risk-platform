@@ -28,8 +28,7 @@ function getYellowShadeForH3Index(h3Index: string): string {
 
 export default function createH3Feature(
     location: Location,
-    resolution: number,
-    id?: string,
+    resolution: number
 ): Feature<Polygon, GeoJsonProperties> {
     const h3Index = latLngToCell(location.latitude, location.longitude, resolution);
     const boundary = cellToBoundary(h3Index);
@@ -39,7 +38,7 @@ export default function createH3Feature(
     const feature: Feature<Polygon, GeoJsonProperties> = {
         type: "Feature",
         properties: {
-            id,
+            id: h3Index,
             h3: h3Index,
             fillColor: getYellowShadeForH3Index(h3Index),
         },
